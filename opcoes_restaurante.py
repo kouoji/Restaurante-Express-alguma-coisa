@@ -1,6 +1,35 @@
 import os
 from ativado.desativado import Restaurante
 
+class Avaliacao:
+    def __init__(self, cliente, nota):
+        self.cliente = cliente
+        self.nota = nota
+
+class Restaurante:
+    def __init__(self, nome, categoria, ativo=True):
+        self.nome = nome
+        self.categoria = categoria
+        self.ativo = ativo
+        self.avaliacoes = []
+
+    def __str__(self):
+        status = '✔' if self.ativo else '✘'
+        return f'{self.nome.ljust(27)} {self.categoria.ljust(34)} {status.ljust(24)}'
+
+    def ativar_desativar(self):
+        self.ativo = not self.ativo
+        return f"Restaurante {'ativado' if self.ativo else 'desativado'}."
+
+    def adicionar_avaliacao(self, cliente, nota):
+        self.avaliacoes.append(Avaliacao(cliente, nota))
+
+    def calcular_media_avaliacoes(self):
+        if not self.avaliacoes:
+            return f"{self.nome}: Nenhuma avaliação"
+        media = sum(avaliacao.nota for avaliacao in self.avaliacoes) / len(self.avaliacoes)
+        return f"{self.nome}: Média de {media:.2f} estrelas"
+
 class ProgramaExpresso:
     def __init__(self):
         self.restaurantes = [
@@ -8,6 +37,11 @@ class ProgramaExpresso:
             Restaurante('Outback', 'Steakhouse', False),
             Restaurante('O Hamburgueiro', 'Hamburgueria', False)
         ]
+
+        self.restaurantes[0].adicionar_avaliacao("Cliente 1", 4)
+        self.restaurantes[1].adicionar_avaliacao("Cliente 2", 5)
+        self.restaurantes[2].adicionar_avaliacao("Cliente 3", 3)
+        self.restaurantes[2].adicionar_avaliacao("Cliente 4", 4)
 
     def finalizar_app(self):
         os.system("clear")
@@ -62,11 +96,13 @@ class ProgramaExpresso:
                 while True:
                     nota = int(input("Digite as estrelas de 1 a 5 para este restaurante: "))
                     if 1 <= nota <= 5:
-                        restaurante.adicionar_avaliacao(nota)
+                        restaurante.adicionar_avaliacao("Novo Cliente", nota)
                         print(f"Você deu estrelas ao restaurante {nome_restaurante} com as estrelas {nota}.")
                         break
                     else:
                         print("Por favor, digite uma estrela válida (entre 1 e 5).")
+
+                break
 
         if not restaurante_encontrado:
             print("Restaurante não encontrado.")
